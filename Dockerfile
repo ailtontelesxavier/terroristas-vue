@@ -1,20 +1,20 @@
-# Build and serve the Vite app in production
-FROM node:18-alpine
-
+FROM node:18-alpine AS dev-stage
 WORKDIR /app
-
-# Instala dependências
 COPY package*.json ./
 RUN npm install
-
-# Copia código e gera build
 COPY . .
 RUN npm run build
 
-# Entrypoint garante que o build exista antes de servir
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+FROM node:18-alpine AS prod-stage
+WORKDIR /app
 
-EXPOSE 4173
-ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]
+COPY --from=dev-stage /app/dist ./dist/
+COPY server.js ./server.js
+COPY package.json ./package.json
+
+ENV NODE_ENV=production
+
+RUN npm install express
+
+EXPOSE 8006
+CMD ["node", "server.js"]

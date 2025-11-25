@@ -1,0 +1,11 @@
+services:
+  terrorista:
+    container_name: terrorista
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8006:8006"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

@@ -1,8 +1,21 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      target: dev-stage
+      dockerfile: Dockerfile
     ports:
-      - "4173:4173"
+      - "8006:8006"
+    networks:
+      backend2:
+        ipv4_address: 172.16.230.11
     environment:
       - NODE_ENV=production
     restart: unless-stopped
+
+networks:
+  backend2:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.230.0/24
